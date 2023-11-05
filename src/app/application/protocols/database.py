@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from app.application.schemas import User
-from app.application.schemas.user import UserInDB
+from app.application.schemas.user_schemas import UserInDB
 
 
 class UoW(ABC):
@@ -17,6 +17,9 @@ class UoW(ABC):
 class DatabaseGateway(ABC):
     @abstractmethod
     def add_user(self, user: User) -> None:
+        raise NotImplementedError
+
+    def refresh_user(self, user):
         raise NotImplementedError
 
     @abstractmethod

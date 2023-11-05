@@ -1,19 +1,15 @@
-from sqlalchemy import Integer, String, Column, MetaData, Table, Boolean, true
-from sqlalchemy.orm import registry
+from sqlalchemy import Integer, String, Column, Boolean
+from sqlalchemy.ext.declarative import declarative_base
 
-from app.application.schemas import User
 
-metadata_obj = MetaData()
-mapper_registry = registry()
+Base = declarative_base()
+metadata_obj = Base.metadata
 
-user = Table(
-    "user",
-    metadata_obj,
-    Column("id", Integer, primary_key=True),
-    Column("username", String()),
-    Column("email", String()),
-    Column('hashed_password', String()),
-    Column("is_active", Boolean(), default=True),
-)
 
-mapper_registry.map_imperatively(User, user)
+class User(Base):
+    __tablename__ = "user"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    is_active = Column(Boolean, default=True)

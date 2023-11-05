@@ -8,7 +8,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.adapters.sqlalchemy_db.gateway import SqlaGateway
-from app.adapters.sqlalchemy_db.models import metadata_obj
 from app.application.protocols.database import DatabaseGateway, UoW
 from app.api.depends_stub import Stub
 

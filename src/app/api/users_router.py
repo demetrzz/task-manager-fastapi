@@ -1,39 +1,36 @@
-from dataclasses import dataclass
-from datetime import timedelta
 from typing import Annotated
 
+import fastapi
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
+from app.application import users_services
 from app.application.protocols.database import DatabaseGateway, UoW
-from app.application.schemas.user import Token, User
-from app.application.users_services import new_user, authenticate_user, ACCESS_TOKEN_EXPIRE_MINUTES, \
-    create_access_token, get_current_active_user
+from app.application.schemas.user_schemas import Token, User, UserCreate
+from app.application.users_services import new_user, authenticate_user, create_access_token, get_current_active_user
 
 users_router = APIRouter()
 
 
-@dataclass
-class SomeResult:
-    user_id: int
-
-
-@users_router.get("/")
-def add_users(
+@users_router.post("/registration")
+def registration(
+        user: UserCreate,
         database: Annotated[DatabaseGateway, Depends()],
         uow: Annotated[UoW, Depends()],
-) -> SomeResult:
-    user_id = new_user(database, uow, "demetr", "demetr@email.com")
-    return SomeResult(
-        user_id=user_id,
-    )
+) -> Token:
+    db_user = database.query_user_by_username(user.username)
+    if db_user:
+        raise fastapi.HTTPException(status_code=400, detail="Username already in use")
+
+    user = users_services.create_user(database, uow, user)
+    return create_access_token(user)
 
 
-@users_router.post("/token", response_model=Token)
+@users_router.post("/token")
 def login_for_access_token(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
         database: Annotated[DatabaseGateway, Depends()],
-):
+) -> Token:
     user = authenticate_user(database, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -41,15 +38,11 @@ def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return create_access_token(user)
 
 
-@users_router.get("/me/", response_model=User)
+@users_router.get("/me")
 def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)]
-):
+) -> User:
     return current_user

@@ -1,14 +1,14 @@
-from .schemas import User
+from fastapi.security import OAuth2PasswordBearer
+
 from .protocols.database import DatabaseGateway, UoW
 from datetime import datetime, timedelta
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from .schemas.user import UserInDB, TokenData
+from .schemas import user_schemas
 from ..adapters.sqlalchemy_db import models
 
 # to get a string like this run:
@@ -19,24 +19,32 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 
 
 def new_user(
         database: DatabaseGateway,
         uow: UoW,
         username: str,
-        email: str,
 ) -> int:
-    user = User(username=username, email=email)
+    user = user_schemas.User(username=username)
     database.add_user(user)
     uow.commit()
     return user.id
 
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
+def create_user(
+        database: DatabaseGateway,
+        uow: UoW,
+        user: user_schemas.UserCreate,
+):
+    user = models.User(
+        username=user.username, hashed_password=pwd_context.hash(user.hashed_password)
+    )
+    database.add_user(user)
+    uow.commit()
+    database.refresh_user(user)
+    return user
 
 
 def authenticate_user(
@@ -52,21 +60,17 @@ def authenticate_user(
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
+def create_access_token(user: user_schemas.UserInDB):
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode = {"sub": user.username, "exp": expire}
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    return {"access_token": encoded_jwt, "token_type": "bearer"}
 
 
 def get_current_user(
         token: Annotated[str, Depends(oauth2_scheme)],
         database: Annotated[DatabaseGateway, Depends()],
-) -> User:
+) -> user_schemas.User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -77,7 +81,7 @@ def get_current_user(
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_data = user_schemas.TokenData(username=username)
     except JWTError:
         raise credentials_exception
     user = database.query_user_by_username(token_data.username)
@@ -87,8 +91,8 @@ def get_current_user(
 
 
 def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)]
-) -> User:
+    current_user: Annotated[user_schemas.User, Depends(get_current_user)]
+) -> user_schemas.User:
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
