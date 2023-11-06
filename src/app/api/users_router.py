@@ -1,13 +1,10 @@
 from typing import Annotated
-
 import fastapi
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-
-from app.application import users_services
 from app.application.protocols.database import DatabaseGateway, UoW
 from app.application.schemas.user_schemas import Token, User, UserCreate
-from app.application.users_services import new_user, authenticate_user, create_access_token, get_current_active_user
+from app.application.users_services import authenticate_user, create_access_token, get_current_active_user, create_user
 
 users_router = APIRouter()
 
@@ -22,7 +19,7 @@ def registration(
     if db_user:
         raise fastapi.HTTPException(status_code=400, detail="Username already in use")
 
-    user = users_services.create_user(database, uow, user)
+    user = create_user(database, uow, user)
     return create_access_token(user)
 
 

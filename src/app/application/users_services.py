@@ -28,7 +28,7 @@ def new_user(
         username: str,
 ) -> int:
     user = user_schemas.User(username=username)
-    database.add_user(user)
+    database.add_one(user)
     uow.commit()
     return user.id
 
@@ -41,9 +41,9 @@ def create_user(
     user = models.User(
         username=user.username, hashed_password=pwd_context.hash(user.hashed_password)
     )
-    database.add_user(user)
+    database.add_one(user)
     uow.commit()
-    database.refresh_user(user)
+    database.refresh_one(user)
     return user
 
 

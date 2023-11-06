@@ -1,6 +1,6 @@
-from sqlalchemy import Integer, String, Column, Boolean
+from sqlalchemy import ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-
+from sqlalchemy.orm import Mapped, mapped_column
 
 Base = declarative_base()
 metadata_obj = Base.metadata
@@ -9,7 +9,17 @@ metadata_obj = Base.metadata
 class User(Base):
     __tablename__ = "user"
 
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    username: Mapped[str] = mapped_column(unique=True, index=True)
+    hashed_password: Mapped[str]
+    is_active: Mapped[bool] = mapped_column(default=True)
+
+
+class Task(Base):
+    __tablename__ = 'task'
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    title: Mapped[str]
+    completed: Mapped[bool] = mapped_column(default=False)
+    author_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    assignee_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
