@@ -26,5 +26,11 @@ class DatabaseGateway(ABC):
     def query_user_by_username(self, username: str) -> UserInDB:
         raise NotImplementedError
 
-    def add_one_task(self, task, id):
+    def add_one_task(self, task, user_id: int):
+        raise NotImplementedError
+
+    def get_tasks_by_user_id(self, user_id):
+        raise NotImplementedError
+
+    def query_task_by_id(self, task_id):
         raise NotImplementedError

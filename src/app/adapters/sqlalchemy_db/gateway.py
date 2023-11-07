@@ -21,8 +21,13 @@ class SqlaGateway(DatabaseGateway):
     def query_user_by_username(self, username: str) -> UserInDB | None:
         return self.session.query(models.User).filter(models.User.username == username).first()
 
-    def add_one_task(self, task: task_schemas.TaskSchemaAdd, id: int):
-        print(task)
-        task = models.Task(**task.model_dump(), author_id=id)
+    def add_one_task(self, task: task_schemas.TaskAdd, user_id: int):
+        task = models.Task(**task.model_dump(), author_id=user_id)
         self.session.add(task)
-        return
+        return task
+
+    def get_tasks_by_user_id(self, user_id: int):
+        return self.session.query(models.Task).filter(models.Task.assignee_id == user_id)
+
+    def query_task_by_id(self, task_id):
+        return self.session.query(models.Task).get(task_id)

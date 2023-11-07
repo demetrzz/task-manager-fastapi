@@ -12,7 +12,10 @@ class TaskBase(BaseModel):
         from_attributes = True
 
 
-class TaskSchemaAdd(BaseModel):
+class TaskAdd(BaseModel):
     title: str
-    author_id: int
     assignee_id: int
+
+
+class TaskCompletion(BaseModel):
+    completed: bool

@@ -1,3 +1,5 @@
+import os
+
 from fastapi.security import OAuth2PasswordBearer
 
 from .protocols.database import DatabaseGateway, UoW
@@ -13,24 +15,13 @@ from ..adapters.sqlalchemy_db import models
 
 # to get a string like this run:
 # openssl rand -hex 32
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHM = os.getenv('ALGORITHM')
+ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES')
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
-
-
-def new_user(
-        database: DatabaseGateway,
-        uow: UoW,
-        username: str,
-) -> int:
-    user = user_schemas.User(username=username)
-    database.add_one(user)
-    uow.commit()
-    return user.id
 
 
 def create_user(
@@ -38,6 +29,9 @@ def create_user(
         uow: UoW,
         user: user_schemas.UserCreate,
 ):
+    db_user = database.query_user_by_username(user.username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already in use")
     user = models.User(
         username=user.username, hashed_password=pwd_context.hash(user.hashed_password)
     )
@@ -53,10 +47,12 @@ def authenticate_user(
         password: str
 ):
     user = database.query_user_by_username(username)
-    if not user:
-        return False
-    if not pwd_context.verify(password, user.hashed_password):
-        return False
+    if not user or not pwd_context.verify(password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return user
 
 

@@ -7,18 +7,14 @@ pip install -e .
 Configure env:
 ```bash
 export DB_URI=postgresql://postgres:password@localhost
-SECRET_KEY=your_key
-ALGORITHM=your_algorithm
-```
-if windows PS:
-```bash
-$Env:DB_URI = "postgresql://postgres:password@localhost" 
+export SECRET_KEY=your_key
+export ALGORITHM=your_algorithm
+export ACCESS_TOKEN_EXPIRE_MINUTES=minutes
 ```
 Apply migrations
 ```bash
 alembic upgrade head
 ```
-
 Run
 
 ```bash
