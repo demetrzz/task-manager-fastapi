@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class UserBase(BaseModel):
@@ -10,12 +10,10 @@ class UserCreate(UserBase):
 
 
 class User(UserBase):
-    id: int
-    username: str
-    is_active: bool
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        from_attributes = True
+    id: int
+    is_active: bool
 
 
 class UserInDB(User):

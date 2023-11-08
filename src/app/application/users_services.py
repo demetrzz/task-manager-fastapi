@@ -17,7 +17,7 @@ from ..adapters.sqlalchemy_db import models
 # openssl rand -hex 32
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
-ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES')
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES'))
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

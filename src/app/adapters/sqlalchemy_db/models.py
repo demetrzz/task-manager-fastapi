@@ -1,6 +1,5 @@
 from sqlalchemy import ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, declarative_base
 
 Base = declarative_base()
 metadata_obj = Base.metadata
