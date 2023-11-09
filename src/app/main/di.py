@@ -14,18 +14,6 @@ from app.api.depends_stub import Stub
 logger = getLogger(__name__)
 
 
-def all_depends(cls: type) -> None:
-    """
-    Adds `Depends()` to the class `__init__` methods, so it can be used
-    a fastapi dependency having own dependencies
-    """
-    init = cls.__init__
-    total_ars = init.__code__.co_kwonlyargcount + init.__code__.co_argcount - 1
-    init.__defaults__ = tuple(
-        Depends() for _ in range(total_ars)
-    )
-
-
 def new_gateway(session: Session = Depends(Stub(Session))):
     yield SqlaGateway(session)
 

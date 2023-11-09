@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.adapters.sqlalchemy_db import models
-from app.application.schemas import user_schemas, task_schemas
+from app.application.schemas import task_schemas
 from app.application.protocols.database import DatabaseGateway
 from app.application.schemas.user_schemas import UserInDB
 

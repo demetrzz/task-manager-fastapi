@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-from app.application.schemas import User
 from app.application.schemas.user_schemas import UserInDB
 
 
