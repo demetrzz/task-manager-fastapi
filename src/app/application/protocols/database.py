@@ -19,10 +19,6 @@ class DatabaseGateway(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def refresh_one(self, one):
-        raise NotImplementedError
-
-    @abstractmethod
     def query_user_by_username(self, username: str) -> UserInDB | None:
         raise NotImplementedError
 

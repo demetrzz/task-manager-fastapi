@@ -21,9 +21,6 @@ class MockDatabase(DatabaseGateway):
     def add_one(self, one) -> None:
         pass
 
-    def refresh_one(self, one):
-        pass
-
     def query_user_by_username(self, username: str) -> UserInDB | None:
         pass
 

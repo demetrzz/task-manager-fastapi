@@ -22,7 +22,6 @@ def add_one_task(
 ) -> TaskBase:
     task = database.add_one_task(task, user_id)
     uow.commit()
-    database.refresh_one(task)
     return task
 
 
@@ -40,5 +39,4 @@ def update_task(
         raise HTTPException(status_code=400, detail="You are not author or assignee of this task")
     db_task.completed = task.completed
     uow.commit()
-    database.refresh_one(db_task)
     return db_task

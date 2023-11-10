@@ -14,10 +14,6 @@ class SqlaGateway(DatabaseGateway):
         self.session.add(one)
         return
 
-    def refresh_one(self, one):
-        self.session.refresh(one)
-        return one
-
     def query_user_by_username(self, username: str) -> UserInDB | None:
         return self.session.query(models.User).filter(models.User.username == username).first()
 

@@ -37,7 +37,6 @@ def create_user(
     )
     database.add_one(user)
     uow.commit()
-    database.refresh_one(user)
     return user
 
 
