@@ -1,21 +1,33 @@
-Install
+# TaskManager
+
+## API для приложения - менеджмента задач
+
+### Стек технологий:
+- Python
+- FastAPI
+- SQLAlchemy
+- PostgreSQL
+- Alembic
+- Pydantic
+- Pytest
+### Установка и настройка:
 
 ```bash
 pip install -e .
 ```
 
-Configure env:
+### Настроить env:
 ```bash
 export DB_URI=postgresql://postgres:password@localhost
 export SECRET_KEY=your_key
 export ALGORITHM=your_algorithm
 export ACCESS_TOKEN_EXPIRE_MINUTES=minutes
 ```
-Apply migrations
+### Применить миграции
 ```bash
 alembic upgrade head
 ```
-Run
+### Запустить:
 
 ```bash
 uvicorn --factory --reload app.main:create_app
