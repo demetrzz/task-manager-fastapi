@@ -4,6 +4,7 @@ from logging import getLogger
 from typing import Iterable
 
 from fastapi import FastAPI, Depends
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 

@@ -1,16 +1,16 @@
 import pytest
 
-from tests.conftest import TEST_USER, MockDatabase, MockDBForRegistration, MockDBForToken
+from tests.conftest import MockDBForRegistration, MockDBForToken, MockDatabase
 
 
 @pytest.mark.parametrize(
     "mock_database",
     [MockDatabase]
 )
-def test_me(client, mock_uow):
+def test_me(client, mock_uow, mock_auth):
     response = client.get("/users/me")
     assert response.status_code == 200
-    assert response.json() == TEST_USER.model_dump()
+    assert response.json() == mock_auth.model_dump()
 
 
 @pytest.mark.parametrize(

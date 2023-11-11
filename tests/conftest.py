@@ -8,8 +8,8 @@ from passlib.context import CryptContext
 from app.application.protocols.database import UoW, DatabaseGateway
 from app.application.schemas import User, task_schemas
 from app.application.schemas.user_schemas import UserInDB
-from app.application.users_services import get_current_active_user
 from app.main import init_routers
+from app.main.auth_di import get_current_active_user
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -18,7 +18,7 @@ TEST_USERINDB = UserInDB(id=1, username="testuser", hashed_password=pwd_context.
 
 
 class MockDatabase(DatabaseGateway):
-    def add_one(self, one) -> None:
+    def add_user(self, user) -> None:
         pass
 
     def query_user_by_username(self, username: str) -> UserInDB | None:

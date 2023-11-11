@@ -6,7 +6,7 @@ from app.application.protocols.database import DatabaseGateway, UoW
 from app.application.schemas import User
 from app.application.schemas.task_schemas import TaskAdd, TaskCompletion, TaskBase
 from app.application.tasks_services import add_one_task, get_users_tasks, update_task
-from app.application.users_services import get_current_active_user
+from app.main.auth_di import get_current_active_user
 
 tasks_router = APIRouter()
 

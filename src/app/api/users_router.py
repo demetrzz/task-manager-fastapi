@@ -1,9 +1,10 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from app.application.protocols.database import DatabaseGateway, UoW
 from app.application.schemas.user_schemas import Token, User, UserCreate
-from app.application.users_services import authenticate_user, create_access_token, get_current_active_user, create_user
+from app.application.users_services import authenticate_user, create_user, InvalidCredentials
+from app.main.auth_di import create_access_token, get_current_active_user
 
 users_router = APIRouter()
 
@@ -14,7 +15,10 @@ def registration(
         database: Annotated[DatabaseGateway, Depends()],
         uow: Annotated[UoW, Depends()],
 ) -> Token:
-    user = create_user(database, uow, user)
+    try:
+        user = create_user(database, uow, user)
+    except InvalidCredentials:
+        raise HTTPException(status_code=400, detail="Username already in use")
     return create_access_token(user)
 
 
@@ -23,7 +27,14 @@ def login_for_access_token(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
         database: Annotated[DatabaseGateway, Depends()],
 ) -> Token:
-    user = authenticate_user(database, form_data.username, form_data.password)
+    try:
+        user = authenticate_user(database, form_data.username, form_data.password)
+    except InvalidCredentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return create_access_token(user)
 
 
