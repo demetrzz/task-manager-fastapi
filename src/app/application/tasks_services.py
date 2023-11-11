@@ -1,13 +1,6 @@
+from app.application.exceptions import InvalidTask, NoPermission
 from app.application.protocols.database import DatabaseGateway, UoW
 from app.application.schemas.task_schemas import TaskAdd, TaskBase, TaskCompletion
-
-
-class InvalidTask(Exception):
-    pass
-
-
-class NoPermission(Exception):
-    pass
 
 
 def get_users_tasks(

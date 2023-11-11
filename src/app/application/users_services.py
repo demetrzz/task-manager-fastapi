@@ -1,13 +1,10 @@
+from .exceptions import InvalidCredentials
 from .protocols.database import DatabaseGateway, UoW
 from passlib.context import CryptContext
 from .schemas import user_schemas
 from ..adapters.sqlalchemy_db import models
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-class InvalidCredentials(Exception):
-    pass
 
 
 def create_user(
