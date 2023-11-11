@@ -1,11 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.application.protocols.database import DatabaseGateway, UoW
 from app.application.schemas import User
 from app.application.schemas.task_schemas import TaskAdd, TaskCompletion, TaskBase
-from app.application.tasks_services import add_one_task, get_users_tasks, update_task
+from app.application.tasks_services import add_one_task, get_users_tasks, update_task, InvalidTask, NoPermission
 from app.main.auth_di import get_current_active_user
 
 tasks_router = APIRouter()
@@ -16,7 +16,11 @@ def get_tasks(
         database: Annotated[DatabaseGateway, Depends()],
         current_user: Annotated[User, Depends(get_current_active_user)]
 ):
-    return get_users_tasks(database, current_user.id)
+    try:
+        tasks = get_users_tasks(database, current_user.id)
+    except InvalidTask:
+        raise HTTPException(status_code=404, detail="This user doesnt have any tasks")
+    return tasks
 
 
 @tasks_router.post("")
@@ -39,4 +43,10 @@ def edit_task_completion(
         task: TaskCompletion,
 
 ) -> TaskBase:
-    return update_task(database, uow, current_user.id, id, task)
+    try:
+        task = update_task(database, uow, current_user.id, id, task)
+    except InvalidTask:
+        raise HTTPException(status_code=404, detail="Task not found")
+    except NoPermission:
+        raise HTTPException(status_code=400, detail="You are not author or assignee of this task")
+    return task

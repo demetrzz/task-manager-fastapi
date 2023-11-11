@@ -1,7 +1,13 @@
-from fastapi import HTTPException
-
 from app.application.protocols.database import DatabaseGateway, UoW
 from app.application.schemas.task_schemas import TaskAdd, TaskBase, TaskCompletion
+
+
+class InvalidTask(Exception):
+    pass
+
+
+class NoPermission(Exception):
+    pass
 
 
 def get_users_tasks(
@@ -10,7 +16,7 @@ def get_users_tasks(
 ):
     tasks = database.get_tasks_by_user_id(user_id)
     if not tasks:
-        raise HTTPException(status_code=404, detail="This user doesnt have any tasks")
+        raise InvalidTask
     return list(map(TaskBase.model_validate, tasks))
 
 
@@ -34,9 +40,9 @@ def update_task(
 ) -> TaskBase:
     db_task = database.query_task_by_id(task_id)
     if not db_task:
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise InvalidTask
     if user_id != db_task.author_id and user_id != db_task.assignee_id:
-        raise HTTPException(status_code=400, detail="You are not author or assignee of this task")
+        raise NoPermission
     db_task.completed = task.completed
     uow.commit()
     return db_task
