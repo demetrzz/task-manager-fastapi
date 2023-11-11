@@ -34,16 +34,6 @@ class MockDatabase(DatabaseGateway):
         pass
 
 
-class MockDBForRegistration(MockDatabase):
-    def query_user_by_username(self, username: str) -> UserInDB | None:
-        return None
-
-
-class MockDBForToken(MockDatabase):
-    def query_user_by_username(self, username: str) -> UserInDB | None:
-        return TEST_USERINDB
-
-
 @fixture
 def mock_uow() -> UoW:
     uow = Mock()
@@ -57,16 +47,32 @@ def mock_auth() -> User:
     return TEST_USER
 
 
-@fixture(params=[MockDatabase, MockDBForRegistration, MockDBForToken])
-def mock_database(request):
-    return request.param()
+@fixture
+def mock_database():
+    return MockDatabase()
+
+
+@fixture
+def mock_database_for_registration(mock_database):
+    def query_user_by_username(username: str) -> UserInDB | None:
+        return None
+    mock_database.query_user_by_username = query_user_by_username
+    return mock_database
+
+
+@fixture
+def mock_database_for_token(mock_database):
+    def query_user_by_username(username: str) -> UserInDB | None:
+        return TEST_USERINDB
+    mock_database.query_user_by_username = query_user_by_username
+    return mock_database
 
 
 @fixture
 def client(mock_uow, mock_database, mock_auth):
     app = FastAPI()
     init_routers(app)
-    app.dependency_overrides[DatabaseGateway] = mock_database
+    app.dependency_overrides[DatabaseGateway] = lambda: mock_database
     app.dependency_overrides[UoW] = lambda: mock_uow
     app.dependency_overrides[get_current_active_user] = lambda: mock_auth
     return TestClient(app)
