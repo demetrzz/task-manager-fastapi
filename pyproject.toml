@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=69.5.1"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -10,7 +10,7 @@ name = "app"
 version = "0.0.1"
 
 description = "FastAPI task manager"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License",
@@ -21,7 +21,10 @@ dependencies = [
     "uvicorn",
     "sqlalchemy",
     "alembic",
-    "psycopg2-binary",
+    "asyncpg",
+    "python-jose",
+    "passlib",
+    "python-multipart",
 ]
 [project.optional-dependencies]
 test = [

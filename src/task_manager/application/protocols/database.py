@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from app.application.schemas.user_schemas import UserInDB
+from task_manager.application.schemas.user_schemas import UserInDB
 
 
 class UoW(ABC):

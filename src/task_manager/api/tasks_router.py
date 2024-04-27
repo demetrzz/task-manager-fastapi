@@ -2,17 +2,17 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.application.protocols.database import DatabaseGateway, UoW
-from app.application.schemas import User
-from app.application.schemas.task_schemas import TaskAdd, TaskCompletion, TaskBase
-from app.application.tasks_services import add_one_task, get_users_tasks, update_task, InvalidTask, NoPermission
-from app.main.auth_di import get_current_active_user
+from task_manager.application.protocols.database import DatabaseGateway, UoW
+from task_manager.application.schemas import User
+from task_manager.application.schemas.task_schemas import TaskAdd, TaskCompletion, TaskBase
+from task_manager.application.tasks_services import add_one_task, get_users_tasks, update_task, InvalidTask, NoPermission
+from task_manager.main.auth_di import get_current_active_user
 
 tasks_router = APIRouter()
 
 
 @tasks_router.get("")
-def get_tasks(
+async def get_tasks(
         database: Annotated[DatabaseGateway, Depends()],
         current_user: Annotated[User, Depends(get_current_active_user)]
 ):
@@ -24,7 +24,7 @@ def get_tasks(
 
 
 @tasks_router.post("")
-def add_task(
+async def add_task(
         database: Annotated[DatabaseGateway, Depends()],
         uow: Annotated[UoW, Depends()],
         task: TaskAdd,
@@ -35,7 +35,7 @@ def add_task(
 
 
 @tasks_router.patch("/{id}")
-def edit_task_completion(
+async def edit_task_completion(
         database: Annotated[DatabaseGateway, Depends()],
         uow: Annotated[UoW, Depends()],
         current_user: Annotated[User, Depends(get_current_active_user)],

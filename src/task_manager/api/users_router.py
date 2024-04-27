@@ -1,16 +1,16 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from app.application.protocols.database import DatabaseGateway, UoW
-from app.application.schemas.user_schemas import Token, User, UserCreate
-from app.application.users_services import authenticate_user, create_user, InvalidCredentials
-from app.main.auth_di import create_access_token, get_current_active_user
+from task_manager.application.protocols.database import DatabaseGateway, UoW
+from task_manager.application.schemas.user_schemas import Token, User, UserCreate
+from task_manager.application.users_services import authenticate_user, create_user, InvalidCredentials
+from task_manager.main.auth_di import create_access_token, get_current_active_user
 
 users_router = APIRouter()
 
 
 @users_router.post("/registration")
-def registration(
+async def registration(
         user: UserCreate,
         database: Annotated[DatabaseGateway, Depends()],
         uow: Annotated[UoW, Depends()],
@@ -23,7 +23,7 @@ def registration(
 
 
 @users_router.post("/token")
-def login_for_access_token(
+async def login_for_access_token(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
         database: Annotated[DatabaseGateway, Depends()],
 ) -> Token:
@@ -39,7 +39,7 @@ def login_for_access_token(
 
 
 @users_router.get("/me")
-def read_users_me(
+async def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)]
 ) -> User:
     return current_user

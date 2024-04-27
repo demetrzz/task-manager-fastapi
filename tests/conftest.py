@@ -5,11 +5,11 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from passlib.context import CryptContext
 
-from app.application.protocols.database import UoW, DatabaseGateway
-from app.application.schemas import User, task_schemas
-from app.application.schemas.user_schemas import UserInDB
-from app.main import init_routers
-from app.main.auth_di import get_current_active_user
+from task_manager.application.protocols.database import UoW, DatabaseGateway
+from task_manager.application.schemas import User, task_schemas
+from task_manager.application.schemas.user_schemas import UserInDB
+from task_manager.main import init_routers
+from task_manager.main.auth_di import get_current_active_user
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

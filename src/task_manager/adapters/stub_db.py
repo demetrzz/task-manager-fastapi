@@ -1,6 +1,6 @@
-from app.application.schemas import User
-from app.application.protocols.database import DatabaseGateway
-from app.application.schemas.user_schemas import UserInDB
+from task_manager.application.schemas import User
+from task_manager.application.protocols.database import DatabaseGateway
+from task_manager.application.schemas.user_schemas import UserInDB
 
 
 class StubDatabaseGateway(DatabaseGateway):

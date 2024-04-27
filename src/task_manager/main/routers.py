@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api import root_router
+from task_manager.api import root_router
 
 
 def init_routers(app: FastAPI):

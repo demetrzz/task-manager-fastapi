@@ -18,7 +18,7 @@ pip install -e .
 
 ### Настроить env:
 ```bash
-export DB_URI=postgresql://postgres:password@localhost
+export DB_URI=postgresql+asyncpg://user_name:testpassword@localhost/task_manager
 export SECRET_KEY=your_key
 export ALGORITHM=your_algorithm
 export ACCESS_TOKEN_EXPIRE_MINUTES=minutes
@@ -30,5 +30,5 @@ alembic upgrade head
 ### Запустить:
 
 ```bash
-uvicorn --factory --reload app.main:create_app
+uvicorn --factory --reload task_manager.main:create_app
 ```

@@ -4,7 +4,7 @@ index_router = APIRouter()
 
 
 @index_router.get("/")
-def index(
+async def index(
         request: Request,
 ) -> dict:
     return {}

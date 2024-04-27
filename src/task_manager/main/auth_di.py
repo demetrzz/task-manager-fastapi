@@ -6,8 +6,8 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 
-from app.application.protocols.database import DatabaseGateway
-from app.application.schemas import user_schemas
+from task_manager.application.protocols.database import DatabaseGateway
+from task_manager.application.schemas import user_schemas
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')

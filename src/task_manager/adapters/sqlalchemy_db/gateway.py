@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 
-from app.adapters.sqlalchemy_db import models
-from app.application.schemas import task_schemas
-from app.application.protocols.database import DatabaseGateway
-from app.application.schemas.user_schemas import UserInDB
+from task_manager.adapters.sqlalchemy_db import models
+from task_manager.application.schemas import task_schemas
+from task_manager.application.protocols.database import DatabaseGateway
+from task_manager.application.schemas.user_schemas import UserInDB
 
 
 class SqlaGateway(DatabaseGateway):

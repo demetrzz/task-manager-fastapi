@@ -8,9 +8,9 @@ from fastapi import FastAPI, Depends
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from app.adapters.sqlalchemy_db.gateway import SqlaGateway
-from app.application.protocols.database import DatabaseGateway, UoW
-from app.api.depends_stub import Stub
+from task_manager.adapters.sqlalchemy_db.gateway import SqlaGateway
+from task_manager.application.protocols.database import DatabaseGateway, UoW
+from task_manager.api.depends_stub import Stub
 
 logger = getLogger(__name__)
 
