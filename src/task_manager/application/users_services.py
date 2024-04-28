@@ -8,15 +8,16 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 async def create_user(
-        database: DatabaseGateway,
-        uow: UoW,
-        user: user_schemas.UserCreate,
+    database: DatabaseGateway,
+    uow: UoW,
+    user: user_schemas.UserCreate,
 ):
     db_user = await database.query_user_by_username(user.username)
     if db_user:
         raise InvalidCredentials
     user = models.User(
-        username=user.username, hashed_password=pwd_context.hash(user.hashed_password)
+        username=user.username,
+        hashed_password=pwd_context.hash(user.hashed_password),
     )
     await database.add_user(user)
     await uow.commit()
@@ -24,9 +25,7 @@ async def create_user(
 
 
 async def authenticate_user(
-        database: DatabaseGateway,
-        username: str,
-        password: str
+    database: DatabaseGateway, username: str, password: str
 ):
     user = await database.query_user_by_username(username)
     if not user or not pwd_context.verify(password, user.hashed_password):

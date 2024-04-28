@@ -10,6 +10,8 @@
 - Alembic
 - Pydantic
 - Pytest
+- dishka
+- fastapi-users
 ### Установка и настройка:
 
 ```bash

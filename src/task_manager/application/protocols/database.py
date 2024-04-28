@@ -1,16 +1,15 @@
 from abc import ABC, abstractmethod
+from typing import Protocol
 
 from task_manager.application.schemas.user_schemas import UserInDB
 
 
-class UoW(ABC):
-    @abstractmethod
+class UoW(Protocol):
     async def commit(self):
-        raise NotImplementedError
+        pass
 
-    @abstractmethod
     async def flush(self):
-        raise NotImplementedError
+        pass
 
 
 class DatabaseGateway(ABC):

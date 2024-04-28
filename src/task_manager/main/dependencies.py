@@ -2,7 +2,11 @@ import os
 from collections.abc import AsyncGenerator
 
 from dishka import Provider, Scope, provide
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import (
+    create_async_engine,
+    async_sessionmaker,
+    AsyncSession,
+)
 
 from task_manager.adapters.sqlalchemy_db.gateway import SqlaGateway
 from task_manager.application.protocols.database import DatabaseGateway, UoW
@@ -23,27 +27,24 @@ class CoreProvider(Provider):
             pool_size=15,
             max_overflow=15,
             connect_args={
-                "connect_timeout": 5,
+                "command_timeout": 5,
             },
         )
         return async_sessionmaker(
-            engine,
-            class_=AsyncSession,
-            autoflush=False,
-            expire_on_commit=False
+            engine, autoflush=False, expire_on_commit=False
         )
 
     @provide()
     async def new_async_session(
-            self,
-            async_session_maker: async_sessionmaker,
+        self,
+        async_session_maker: async_sessionmaker,
     ) -> AsyncGenerator[AsyncSession, None]:
         async with async_session_maker() as session:
             yield session
 
     @provide()
     async def new_gateway(self, session: AsyncSession) -> DatabaseGateway:
-        yield SqlaGateway(session=session)
+        return SqlaGateway(session)
 
     @provide()
     async def new_uow(self, session: AsyncSession) -> UoW:

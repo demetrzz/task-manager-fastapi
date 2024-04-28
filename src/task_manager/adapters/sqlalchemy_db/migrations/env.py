@@ -10,7 +10,7 @@ from alembic import context
 # access to the values within the .ini file in use.
 config = context.config
 db_uri = os.getenv("DB_URI")
-config.set_main_option('sqlalchemy.url', db_uri)
+config.set_main_option("sqlalchemy.url", db_uri)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -21,7 +21,9 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from src.task_manager.adapters.sqlalchemy_db.models import metadata_obj as target_metadata
+from src.task_manager.adapters.sqlalchemy_db.models import (
+    metadata_obj as target_metadata,
+)
 
 
 # other values from the config, defined by the needs of env.py,

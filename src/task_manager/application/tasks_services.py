@@ -1,11 +1,15 @@
 from task_manager.application.exceptions import InvalidTask, NoPermission
 from task_manager.application.protocols.database import DatabaseGateway, UoW
-from task_manager.application.schemas.task_schemas import TaskAdd, TaskBase, TaskCompletion
+from task_manager.application.schemas.task_schemas import (
+    TaskAdd,
+    TaskBase,
+    TaskCompletion,
+)
 
 
 async def get_users_tasks(
-        database: DatabaseGateway,
-        user_id: int,
+    database: DatabaseGateway,
+    user_id: int,
 ):
     tasks = await database.get_tasks_by_user_id(user_id)
     if not tasks:
@@ -14,10 +18,7 @@ async def get_users_tasks(
 
 
 async def add_one_task(
-        database: DatabaseGateway,
-        uow: UoW,
-        task: TaskAdd,
-        user_id: int
+    database: DatabaseGateway, uow: UoW, task: TaskAdd, user_id: int
 ) -> TaskBase:
     task = await database.add_one_task(task, user_id)
     await uow.commit()
@@ -25,11 +26,11 @@ async def add_one_task(
 
 
 async def update_task(
-        database: DatabaseGateway,
-        uow: UoW,
-        user_id: int,
-        task_id: int,
-        task: TaskCompletion
+    database: DatabaseGateway,
+    uow: UoW,
+    user_id: int,
+    task_id: int,
+    task: TaskCompletion,
 ) -> TaskBase:
     db_task = await database.query_task_by_id(task_id)
     if not db_task:

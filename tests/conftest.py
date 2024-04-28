@@ -14,7 +14,12 @@ from task_manager.main.auth_di import get_current_active_user
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 TEST_USER = User(id=1, username="testuser", is_active=True)
-TEST_USERINDB = UserInDB(id=1, username="testuser", hashed_password=pwd_context.hash("testpassword"), is_active=True)
+TEST_USERINDB = UserInDB(
+    id=1,
+    username="testuser",
+    hashed_password=pwd_context.hash("testpassword"),
+    is_active=True,
+)
 
 
 class MockDatabase(DatabaseGateway):
@@ -56,6 +61,7 @@ def mock_database():
 def mock_database_for_registration(mock_database):
     def query_user_by_username(username: str) -> UserInDB | None:
         return None
+
     mock_database.query_user_by_username = query_user_by_username
     return mock_database
 
@@ -64,6 +70,7 @@ def mock_database_for_registration(mock_database):
 def mock_database_for_token(mock_database):
     def query_user_by_username(username: str) -> UserInDB | None:
         return TEST_USERINDB
+
     mock_database.query_user_by_username = query_user_by_username
     return mock_database
 
