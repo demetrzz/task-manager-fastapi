@@ -1,10 +1,11 @@
+from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter
 
 from .index_router import index_router
 from .tasks_router import tasks_router
 from .users_router import users_router
 
-root_router = APIRouter()
+root_router = APIRouter(route_class=DishkaRoute)
 root_router.include_router(
     users_router,
     prefix="/users",

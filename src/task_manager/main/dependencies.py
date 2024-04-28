@@ -43,7 +43,7 @@ class CoreProvider(Provider):
 
     @provide()
     async def new_gateway(self, session: AsyncSession) -> DatabaseGateway:
-        return SqlaGateway(session=session)
+        yield SqlaGateway(session=session)
 
     @provide()
     async def new_uow(self, session: AsyncSession) -> UoW:

@@ -5,32 +5,31 @@ from task_manager.application.schemas.user_schemas import UserInDB
 
 class UoW(ABC):
     @abstractmethod
-    def commit(self):
+    async def commit(self):
         raise NotImplementedError
 
     @abstractmethod
-    def flush(self):
+    async def flush(self):
         raise NotImplementedError
 
 
 class DatabaseGateway(ABC):
     @abstractmethod
-    def add_user(self, user):
-        self.session.add(user)
-        return
-
-    @abstractmethod
-    def query_user_by_username(self, username: str) -> UserInDB | None:
+    async def add_user(self, user):
         raise NotImplementedError
 
     @abstractmethod
-    def add_one_task(self, task, user_id: int):
+    async def query_user_by_username(self, username: str) -> UserInDB | None:
         raise NotImplementedError
 
     @abstractmethod
-    def get_tasks_by_user_id(self, user_id):
+    async def add_one_task(self, task, user_id: int):
         raise NotImplementedError
 
     @abstractmethod
-    def query_task_by_id(self, task_id):
+    async def get_tasks_by_user_id(self, user_id):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def query_task_by_id(self, task_id):
         raise NotImplementedError

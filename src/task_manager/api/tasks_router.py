@@ -1,5 +1,7 @@
 from typing import Annotated
 
+from dishka import FromDishka
+from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter, Depends, HTTPException
 
 from task_manager.application.protocols.database import DatabaseGateway, UoW
@@ -8,16 +10,16 @@ from task_manager.application.schemas.task_schemas import TaskAdd, TaskCompletio
 from task_manager.application.tasks_services import add_one_task, get_users_tasks, update_task, InvalidTask, NoPermission
 from task_manager.main.auth_di import get_current_active_user
 
-tasks_router = APIRouter()
+tasks_router = APIRouter(route_class=DishkaRoute)
 
 
 @tasks_router.get("")
 async def get_tasks(
-        database: Annotated[DatabaseGateway, Depends()],
-        current_user: Annotated[User, Depends(get_current_active_user)]
+        database: FromDishka[DatabaseGateway],
+        current_user: Annotated[User, Depends(get_current_active_user)] # fix after adding fastapi-users
 ):
     try:
-        tasks = get_users_tasks(database, current_user.id)
+        tasks = await get_users_tasks(database, current_user.id)
     except InvalidTask:
         raise HTTPException(status_code=404, detail="This user doesnt have any tasks")
     return tasks
@@ -25,26 +27,26 @@ async def get_tasks(
 
 @tasks_router.post("")
 async def add_task(
-        database: Annotated[DatabaseGateway, Depends()],
-        uow: Annotated[UoW, Depends()],
+        database: FromDishka[DatabaseGateway],
+        uow: FromDishka[UoW],
         task: TaskAdd,
-        current_user: Annotated[User, Depends(get_current_active_user)]
+        current_user: Annotated[User, Depends(get_current_active_user)] # fix after adding fastapi-users
 
 ) -> TaskBase:
-    return add_one_task(database, uow, task, current_user.id)
+    return await add_one_task(database, uow, task, current_user.id)
 
 
 @tasks_router.patch("/{id}")
 async def edit_task_completion(
-        database: Annotated[DatabaseGateway, Depends()],
-        uow: Annotated[UoW, Depends()],
-        current_user: Annotated[User, Depends(get_current_active_user)],
+        database: FromDishka[DatabaseGateway],
+        uow: FromDishka[UoW],
+        current_user: Annotated[User, Depends(get_current_active_user)], # fix after adding fastapi-users
         id: int,
         task: TaskCompletion,
 
 ) -> TaskBase:
     try:
-        task = update_task(database, uow, current_user.id, id, task)
+        task = await update_task(database, uow, current_user.id, id, task)
     except InvalidTask:
         raise HTTPException(status_code=404, detail="Task not found")
     except NoPermission:

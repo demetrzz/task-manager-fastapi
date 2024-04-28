@@ -1,4 +1,7 @@
 from typing import Annotated
+
+from dishka import FromDishka
+from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from task_manager.application.protocols.database import DatabaseGateway, UoW
@@ -6,14 +9,14 @@ from task_manager.application.schemas.user_schemas import Token, User, UserCreat
 from task_manager.application.users_services import authenticate_user, create_user, InvalidCredentials
 from task_manager.main.auth_di import create_access_token, get_current_active_user
 
-users_router = APIRouter()
+users_router = APIRouter(route_class=DishkaRoute)
 
 
 @users_router.post("/registration")
 async def registration(
         user: UserCreate,
-        database: Annotated[DatabaseGateway, Depends()],
-        uow: Annotated[UoW, Depends()],
+        database: FromDishka[DatabaseGateway],
+        uow: FromDishka[UoW],
 ) -> Token:
     try:
         user = create_user(database, uow, user)
@@ -24,8 +27,8 @@ async def registration(
 
 @users_router.post("/token")
 async def login_for_access_token(
-        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-        database: Annotated[DatabaseGateway, Depends()],
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()], # fix after adding fastapi-users
+        database: FromDishka[DatabaseGateway],
 ) -> Token:
     try:
         user = authenticate_user(database, form_data.username, form_data.password)
@@ -40,6 +43,6 @@ async def login_for_access_token(
 
 @users_router.get("/me")
 async def read_users_me(
-    current_user: Annotated[User, Depends(get_current_active_user)]
+    current_user: Annotated[User, Depends(get_current_active_user)] # fix after adding fastapi-users
 ) -> User:
     return current_user

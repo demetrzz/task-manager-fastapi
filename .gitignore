@@ -4,3 +4,4 @@ venv
 .idea
 __pycache__
 app.egg-info
+task_manager.egg-info
