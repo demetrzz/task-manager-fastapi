@@ -5,17 +5,18 @@ from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from task_manager.application.protocols.database import DatabaseGateway, UoW
-from task_manager.application.schemas.user_schemas import (
+from task_manager.domain.schemas.user_schemas import (
     Token,
     User,
     UserCreate,
 )
-from task_manager.application.users_services import (
+from task_manager.domain.services.users_services import (
     authenticate_user,
     create_user,
     InvalidCredentials,
 )
 from task_manager.main.auth_di import create_access_token
+from task_manager.main.config import Config
 
 users_router = APIRouter(route_class=DishkaRoute)
 
@@ -25,12 +26,13 @@ async def registration(
     user: UserCreate,
     database: FromDishka[DatabaseGateway],
     uow: FromDishka[UoW],
+    config: FromDishka[Config]
 ) -> Token:
     try:
         user = await create_user(database, uow, user)
     except InvalidCredentials:
         raise HTTPException(status_code=400, detail="Username already in use")
-    return await create_access_token(user)
+    return await create_access_token(user, config)
 
 
 @users_router.post("/token")

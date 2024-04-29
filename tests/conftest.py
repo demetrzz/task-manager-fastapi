@@ -6,8 +6,9 @@ from fastapi.testclient import TestClient
 from passlib.context import CryptContext
 
 from task_manager.application.protocols.database import UoW, DatabaseGateway
-from task_manager.application.schemas import User, task_schemas
-from task_manager.application.schemas.user_schemas import UserInDB
+from task_manager.domain.schemas import User
+from task_manager.domain.schemas import task_schemas
+from task_manager.domain.schemas.user_schemas import UserInDB
 from task_manager.main import init_routers
 from task_manager.main.auth_di import get_current_active_user
 

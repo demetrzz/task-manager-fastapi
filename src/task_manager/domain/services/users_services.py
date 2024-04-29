@@ -1,8 +1,8 @@
-from .exceptions import InvalidCredentials
-from .protocols.database import DatabaseGateway, UoW
+from task_manager.domain.exceptions import InvalidCredentials
+from task_manager.application.protocols.database import DatabaseGateway, UoW
 from passlib.context import CryptContext
-from .schemas import user_schemas
-from ..adapters.sqlalchemy_db import models
+from task_manager.domain.schemas import user_schemas
+from .. import models
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

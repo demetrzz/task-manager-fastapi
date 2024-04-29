@@ -1,6 +1,6 @@
-from task_manager.application.exceptions import InvalidTask, NoPermission
+from task_manager.domain.exceptions import InvalidTask, NoPermission
 from task_manager.application.protocols.database import DatabaseGateway, UoW
-from task_manager.application.schemas.task_schemas import (
+from task_manager.domain.schemas.task_schemas import (
     TaskAdd,
     TaskBase,
     TaskCompletion,

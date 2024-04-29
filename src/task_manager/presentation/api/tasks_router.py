@@ -3,13 +3,13 @@ from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter, HTTPException
 
 from task_manager.application.protocols.database import DatabaseGateway, UoW
-from task_manager.application.schemas import User
-from task_manager.application.schemas.task_schemas import (
+from task_manager.domain.schemas import User
+from task_manager.domain.schemas.task_schemas import (
     TaskAdd,
     TaskCompletion,
     TaskBase,
 )
-from task_manager.application.tasks_services import (
+from task_manager.domain.services.tasks_services import (
     add_one_task,
     get_users_tasks,
     update_task,

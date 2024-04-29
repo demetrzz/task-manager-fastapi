@@ -22,7 +22,7 @@ pip install -e .
 ```bash
 export DB_URI=postgresql+asyncpg://user_name:testpassword@localhost/task_manager
 export SECRET_KEY=your_key
-export ALGORITHM=your_algorithm
+export ALGORITHM=your_sha_algorithm
 export ACCESS_TOKEN_EXPIRE_MINUTES=minutes
 ```
 ### Применить миграции

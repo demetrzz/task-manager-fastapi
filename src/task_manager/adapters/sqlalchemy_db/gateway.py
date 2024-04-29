@@ -1,10 +1,10 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from task_manager.adapters.sqlalchemy_db import models
-from task_manager.application.schemas import task_schemas
+from task_manager.domain import models
+from task_manager.domain.schemas import task_schemas
 from task_manager.application.protocols.database import DatabaseGateway
-from task_manager.application.schemas.user_schemas import UserInDB
+from task_manager.domain.schemas.user_schemas import UserInDB
 
 
 class SqlaGateway(DatabaseGateway):

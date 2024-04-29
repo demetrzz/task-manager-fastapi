@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Protocol
 
-from task_manager.application.schemas.user_schemas import UserInDB
+from task_manager.domain.schemas.user_schemas import UserInDB
 
 
 class UoW(Protocol):
