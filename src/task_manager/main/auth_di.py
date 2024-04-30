@@ -15,10 +15,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 
 async def create_access_token(user: user_schemas.UserInDB,
                               config: FromDishka[Config]):
-    print(config)
-    print("====================================")
-    expire = datetime.utcnow() + timedelta(minutes=config.token_expires)  # 'function' object has no attribute
-    # 'token_expires'
+    expire = datetime.utcnow() + timedelta(minutes=config.token_expires)
     to_encode = {"sub": user.username, "exp": expire}
     encoded_jwt = jwt.encode(to_encode, config.jwt_secret, algorithm=config.sha_algorithm)
     return {"access_token": encoded_jwt, "token_type": "bearer"}
