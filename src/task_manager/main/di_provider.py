@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import (
 
 from task_manager.adapters.sqlalchemy_db.gateway import SqlaGateway
 from task_manager.application.protocols.database import DatabaseGateway, UoW
-from task_manager.main.config import Config, load_config
+from task_manager.main.config import Config, load_config, ConfigProvider
 
 
 class CoreProvider(Provider):
@@ -17,15 +17,14 @@ class CoreProvider(Provider):
 
     @provide(scope=scope.APP)
     async def provide_config(self) -> Config:
-        # config = await load_config()
-        # config_provider = cast(Config, ConfigProvider(
-        #     db_uri=config.db_uri,
-        #     jwt_secret=config.jwt_secret,
-        #     sha_algorithm=config.sha_algorithm,
-        #     token_expires=config.token_expires
-        # ))
-        # return config_provider
-        return cast(Config, load_config)
+        config = await load_config()
+        config_provider = cast(Config, ConfigProvider(
+            db_uri=config.db_uri,
+            jwt_secret=config.jwt_secret,
+            sha_algorithm=config.sha_algorithm,
+            token_expires=config.token_expires
+        ))
+        return config_provider
 
     @provide(scope=Scope.APP)
     async def create_async_session_maker(self) -> async_sessionmaker:
