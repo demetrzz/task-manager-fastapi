@@ -2,6 +2,8 @@ from collections.abc import AsyncGenerator
 from typing import cast
 
 from dishka import Provider, Scope, provide
+from fastapi import Depends
+from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import (
     create_async_engine,
     AsyncSession, async_sessionmaker,
@@ -9,7 +11,34 @@ from sqlalchemy.ext.asyncio import (
 
 from task_manager.adapters.sqlalchemy_db.gateway import SqlaGateway
 from task_manager.application.protocols.database import DatabaseGateway, UoW
-from task_manager.main.config import Config, load_config, ConfigProvider
+from task_manager.domain.models import User
+from task_manager.main.config import Config, load_config
+
+
+async def create_async_session_maker() -> async_sessionmaker[AsyncSession]:
+    config = await load_config()
+    engine = create_async_engine(
+        config.db_uri,
+        echo=True,
+        pool_size=15,
+        max_overflow=15,
+        connect_args={
+            "command_timeout": 5,
+        },
+    )
+    return async_sessionmaker(
+        engine, autoflush=False, expire_on_commit=False
+    )
+
+
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    session_maker = await create_async_session_maker()
+    async with session_maker() as session:
+        yield session
+
+
+async def get_user_db(session: AsyncSession = Depends(get_async_session)):
+    yield SQLAlchemyUserDatabase(session, User)
 
 
 class CoreProvider(Provider):
@@ -18,37 +47,13 @@ class CoreProvider(Provider):
     @provide(scope=scope.APP)
     async def provide_config(self) -> Config:
         config = await load_config()
-        config_provider = cast(Config, ConfigProvider(
-            db_uri=config.db_uri,
-            jwt_secret=config.jwt_secret,
-            sha_algorithm=config.sha_algorithm,
-            token_expires=config.token_expires
-        ))
-        return config_provider
-
-    @provide(scope=Scope.APP)
-    async def create_async_session_maker(self) -> async_sessionmaker:
-        config = await load_config()
-        engine = create_async_engine(
-            config.db_uri,
-            echo=True,
-            pool_size=15,
-            max_overflow=15,
-            connect_args={
-                "command_timeout": 5,
-            },
-        )
-        return async_sessionmaker(
-            engine, autoflush=False, expire_on_commit=False
-        )
+        return config
 
     @provide()
-    async def new_async_session(
-            self,
-            async_session_maker: async_sessionmaker,
+    async def provide_async_session(
+            self
     ) -> AsyncGenerator[AsyncSession, None]:
-        async with async_session_maker() as session:
-            yield session
+        yield get_async_session()
 
     @provide(provides=DatabaseGateway)
     async def new_gateway(self, session: AsyncSession) -> DatabaseGateway:

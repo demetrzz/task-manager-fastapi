@@ -8,10 +8,10 @@ from fastapi_users.authentication import (
     BearerTransport,
     JWTStrategy,
 )
-from fastapi_users.db import SQLAlchemyUserDatabase
+from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 
 from task_manager.domain.models import User
-from task_manager.main.fastapi_users_auth.db import get_user_db
+from task_manager.main.di_provider import get_user_db
 
 SECRET = "SECRET"
 

@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Protocol
 
-from task_manager.domain.schemas.user_schemas import UserInDB
-
 
 class UoW(Protocol):
     async def commit(self):
@@ -18,7 +16,7 @@ class DatabaseGateway(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def query_user_by_username(self, username: str) -> UserInDB | None:
+    async def query_user_by_username(self, username: str):
         raise NotImplementedError
 
     @abstractmethod
