@@ -1,29 +1,15 @@
-from pydantic import BaseModel, ConfigDict
+import uuid
+
+from fastapi_users import schemas
 
 
-class UserBase(BaseModel):
-    username: str
+class UserRead(schemas.BaseUser[uuid.UUID]):
+    pass
 
 
-class UserCreate(UserBase):
-    hashed_password: str
+class UserCreate(schemas.BaseUserCreate):
+    pass
 
 
-class User(UserBase):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    is_active: bool
-
-
-class UserInDB(User):
-    hashed_password: str
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-
-class TokenData(BaseModel):
-    username: str
+class UserUpdate(schemas.BaseUserUpdate):
+    pass

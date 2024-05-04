@@ -41,19 +41,3 @@ async def load_config() -> Config:
         sha_algorithm=sha_algorithm,
         token_expires=token_expires
     )
-
-
-class ConfigProvider:
-    def __init__(self, db_uri: str, jwt_secret: str, sha_algorithm: str, token_expires: int):
-        self.db_uri = db_uri
-        self.jwt_secret = jwt_secret
-        self.sha_algorithm = sha_algorithm
-        self.token_expires = token_expires
-
-    async def __call__(self) -> Config:
-        return Config(
-            db_uri=self.db_uri,
-            jwt_secret=self.jwt_secret,
-            sha_algorithm=self.sha_algorithm,
-            token_expires=self.token_expires
-        )

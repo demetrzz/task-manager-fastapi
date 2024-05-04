@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from task_manager.domain import models
 from task_manager.domain.schemas import task_schemas
 from task_manager.application.protocols.database import DatabaseGateway
-from task_manager.domain.schemas.user_schemas import UserInDB
 
 
 class SqlaGateway(DatabaseGateway):
@@ -15,7 +14,7 @@ class SqlaGateway(DatabaseGateway):
         self.session.add(user)
         return
 
-    async def query_user_by_username(self, username: str) -> UserInDB | None:
+    async def query_user_by_username(self, username: str):
         result = await self.session.execute(
             select(models.User).where(models.User.username == username)
         )
