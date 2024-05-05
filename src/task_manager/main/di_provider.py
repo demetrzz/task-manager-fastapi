@@ -1,5 +1,4 @@
 from collections.abc import AsyncGenerator
-from typing import cast
 
 from dishka import Provider, Scope, provide
 from fastapi import Depends
@@ -12,11 +11,11 @@ from sqlalchemy.ext.asyncio import (
 from task_manager.adapters.sqlalchemy_db.gateway import SqlaGateway
 from task_manager.application.protocols.database import DatabaseGateway, UoW
 from task_manager.domain.models import User
-from task_manager.main.config import Config, load_config
+from task_manager.main.config import load_config
 
 
 async def create_async_session_maker() -> async_sessionmaker[AsyncSession]:
-    config = await load_config()
+    config = load_config()
     engine = create_async_engine(
         config.db_uri,
         echo=True,
@@ -44,18 +43,13 @@ async def get_user_db(session: AsyncSession = Depends(get_async_session)):
 class CoreProvider(Provider):
     scope = Scope.REQUEST
 
-    @provide(scope=scope.APP)
-    async def provide_config(self) -> Config:
-        config = await load_config()
-        return config
-
     @provide()
     async def provide_async_session(
             self
     ) -> AsyncGenerator[AsyncSession, None]:
         yield get_async_session()
 
-    @provide(provides=DatabaseGateway)
+    @provide()
     async def new_gateway(self, session: AsyncSession) -> DatabaseGateway:
         yield SqlaGateway(session)
 
